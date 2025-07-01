@@ -1,0 +1,6 @@
+[submodule "StreamPoseML"]
+	path = StreamPoseML
+	url = https://github.com/mrilikecoding/StreamPoseML.git
+[submodule "eddi"]
+	path = eddi
+	url = https://github.com/mrilikecoding/eddi.git
