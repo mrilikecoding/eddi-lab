@@ -258,14 +258,29 @@ If integration fails:
 3. API version compatibility ensures graceful degradation
 4. Feature flags allow selective component disable
 
-## STARTING A NEW SESSION
+# SESSION HANDOFF PROTOCOL
 
+## Ending a Claude Code Session
+1. **Run `make quick`** to document current state
+2. **Update TodoWrite** with session progress and next priorities
+3. **Commit all WIP** with clear "WIP:" prefixes and issue references
+4. **Document important context** in TodoWrite (decisions made, integration dependencies discovered)
+5. **Note any blockers** or prerequisites for next session
+6. **Push branches** to preserve work across sessions
+
+## Starting a Claude Code Session
 1. **Quick overview**: Run `make quick` to see status and top priorities
-2. **Check TodoRead** to see current task status
+2. **Check TodoRead** to see current task status and session context
 3. **Review available work**: Run `make issues` to see all open issues
 4. **Consult roadmap**: Run `make roadmap` to understand current phase and strategic priorities
 5. **Select work using priority framework** (run `make priority` for criteria)
 6. **Follow TDD cycle** for all development work
+
+## Context Preservation
+- **Use TodoWrite as session memory** - record decisions, discoveries, blockers
+- **WIP commits preserve state** - never lose work between sessions
+- **Branch naming includes issue context** - easy to resume work
+- **Integration test status** shows cross-repo progress
 
 ## PROJECT MANAGEMENT GUIDELINES
 
@@ -379,18 +394,127 @@ When multiple HIGH priority items exist:
 - Performance optimizations
 - Documentation updates
 
+# BRANCH NAMING CONVENTIONS
+
+## Single-Repo Issues
+```
+issue-{number}-{short-description}
+```
+Examples:
+- `issue-42-fix-device-latency`
+- `issue-15-add-gesture-validation`
+- `issue-73-refactor-mhi-algorithm`
+
+## Multi-Repo Features
+```
+feature/{epic-name}-{component}
+```
+Examples:
+- `feature/gesture-pipeline-pose-extraction` (StreamPoseML)
+- `feature/gesture-pipeline-mhi-processing` (Skeleton-MHI)  
+- `feature/gesture-pipeline-spatial-response` (Eddi)
+- `feature/gesture-pipeline-device-control` (Eddi-pad)
+
+## Research/Experimental Work
+```
+research/{experiment-name}
+```
+Examples:
+- `research/skeleton-mhi-baseline`
+- `research/performance-benchmarks`
+
+# ISSUE-DRIVEN DEVELOPMENT
+
+## Always Work From Issues
+1. **NEVER start implementation without a GitHub issue**
+2. **Create issue first** if one doesn't exist
+3. **Reference issue number** in all commits and PRs
+4. **Close issues via commit messages** when appropriate
+
+## Issue Creation Guidelines
+- **Single-repo issues**: Create in the specific repository
+- **Cross-repo features**: Create epic in eddi-lab (main repo)
+- **Research tasks**: Create in eddi-lab with "research" label
+
+# INTEGRATION TESTING STRATEGY
+
+## eddi-lab as Integration Hub
+- **All cross-repo integration tests** live in eddi-lab
+- **End-to-end pipeline tests** validate full data flow
+- **Performance integration tests** ensure latency targets met
+- **API contract tests** validate cross-repo communication
+
+## Integration Test Requirements
+For any cross-repo feature:
+1. **Write integration test in eddi-lab first** (TDD at integration level)
+2. **Test should fail initially** until all components implemented
+3. **Integration test must pass** before any cross-repo PR merge
+4. **Performance assertions** included in integration tests
+
 ## GITHUB WORKFLOW
 
 When working on GitHub issues, follow these steps:
 
-1. Use `gh issue view` to get the issue details
-2. Understand the problem described in the issue
-3. Search the codebase for relevant files
-4. Implement the necessary changes to fix the issue
-5. Write and run tests to verify the fix
-6. Ensure code passes linting and type checking
-7. Create a descriptive commit message
-8. Push and create a PR
+1. **Check out proper branch**: `git checkout -b issue-{number}-{description}`
+2. Use `gh issue view {number}` to get the issue details
+3. Understand the problem described in the issue
+4. **Create/update integration tests** in eddi-lab if cross-repo feature
+5. Search the codebase for relevant files
+6. Follow TDD cycle: Red → Green → Refactor
+7. Implement the necessary changes to fix the issue
+8. Write and run tests to verify the fix
+9. **Run integration tests** in eddi-lab for cross-repo changes
+10. Ensure code passes linting and type checking
+11. Create descriptive commit messages referencing issue
+12. Push and create PR with `gh pr create`
+13. **Link PR to issue** in PR description
+
+# PULL REQUEST GUIDELINES
+
+## PR Creation Standards
+- **Title Format**: `[Issue #{number}] Brief description`
+- **Always link to issue**: Use "Closes #{number}" or "Addresses #{number}"
+- **Include test results**: Show that tests pass
+- **Integration test status**: For cross-repo features, show eddi-lab integration tests pass
+- **Performance impact**: Note any performance changes
+- **Breaking changes**: Clearly document API changes
+
+## PR Description Template
+```markdown
+## Summary
+Brief description of changes
+
+## Related Issue
+Closes #{issue-number}
+
+## Changes Made
+- [ ] Specific change 1
+- [ ] Specific change 2
+
+## Testing
+- [ ] Unit tests pass (`make test`)
+- [ ] Linting passes (`make lint`) 
+- [ ] Integration tests pass (eddi-lab, if applicable)
+- [ ] Performance targets met (if applicable)
+
+## Performance Impact
+- No performance impact / Improves performance by X / etc.
+
+## Breaking Changes
+None / List any breaking changes
+
+## Cross-Repo Dependencies
+None / Links to related PRs in other repos
+```
+
+## Cross-Repo PR Coordination
+For multi-repo features:
+1. **Create integration test in eddi-lab first** (should fail initially)
+2. **Create PRs in dependency order** (producers before consumers)
+3. **Reference related PRs** in other repos
+4. **Integration tests must pass** before any merge
+5. **Coordinate merging** - don't merge until all repos ready
+6. **Use draft PRs** for work-in-progress coordination
 
 Remember to use the GitHub CLI (`gh`) for all GitHub-related tasks.
 
