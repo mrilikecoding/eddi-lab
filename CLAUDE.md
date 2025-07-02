@@ -146,11 +146,12 @@ Legacy Lumi → Analysis → Eddi Architecture → Component Migration → Featu
 
 ## STARTING A NEW SESSION
 
-1. **Check TodoRead** to see current task status
-2. **Review open issues** with `gh issue list` to understand priorities
-3. **Consult roadmap** (Issue #16) to understand current phase and strategic priorities
-4. **Select work using priority framework** (see Project Management section below)
-5. **Follow TDD cycle** for all development work
+1. **Quick overview**: Run `make quick` to see status and top priorities
+2. **Check TodoRead** to see current task status
+3. **Review available work**: Run `make issues` to see all open issues
+4. **Consult roadmap**: Run `make roadmap` to understand current phase and strategic priorities
+5. **Select work using priority framework** (run `make priority` for criteria)
+6. **Follow TDD cycle** for all development work
 
 ## PROJECT MANAGEMENT GUIDELINES
 
@@ -210,11 +211,12 @@ When choosing what to work on next, evaluate issues using this priority matrix:
 ### Decision-Making Process
 
 #### Daily Work Selection
-1. **Check current roadmap phase** (Issue #16) for strategic context
-2. **Review active todos** for in-progress work
-3. **Assess available issues** using priority framework above
-4. **Choose highest-priority item** that matches available time/energy
-5. **Check dependencies** to ensure prerequisites are met
+1. **Run `make quick`** for immediate overview of status and priorities
+2. **Check current roadmap phase** with `make roadmap` for strategic context
+3. **Review active todos** for in-progress work
+4. **Assess available issues** using `make issues` and priority framework (`make priority`)
+5. **Choose highest-priority item** that matches available time/energy
+6. **Check dependencies** to ensure prerequisites are met
 
 #### When Priorities Conflict
 1. **Research vs. Implementation**: Favor research in Phase 1 (academic deadlines)
@@ -223,9 +225,9 @@ When choosing what to work on next, evaluate issues using this priority matrix:
 4. **Blocked Work**: Switch to unblocked items while resolving dependencies
 
 #### Weekly Planning
-- **Monday**: Review roadmap progress and adjust weekly focus
-- **Wednesday**: Check if current work aligns with strategic priorities  
-- **Friday**: Assess week's progress and plan next week's priorities
+- **Monday**: Run `make quick` and `make roadmap` to review progress and adjust weekly focus
+- **Wednesday**: Run `make status` and `make issues` to check alignment with strategic priorities  
+- **Friday**: Assess week's progress with `make quick` and plan next week's priorities
 
 ### Success Metrics
 
@@ -269,6 +271,44 @@ When working on GitHub issues, follow these steps:
 8. Push and create a PR
 
 Remember to use the GitHub CLI (`gh`) for all GitHub-related tasks.
+
+## MAKE COMMANDS FOR ECOSYSTEM MANAGEMENT
+
+The Makefile provides essential commands for managing the multi-repo ecosystem efficiently:
+
+### Project Management Commands
+- `make quick` - **Most important!** Quick status overview + top priorities
+- `make issues` - List open issues across all repositories  
+- `make roadmap` - Show current strategic roadmap (Issue #16)
+- `make priority` - Display priority assessment framework
+- `make status` - Git status across all 5 repositories
+
+### Development Workflow Commands  
+- `make setup` - Initial setup (submodules + dependencies)
+- `make build` - Build all Rust projects (eddi-pad, skeleton-mhi)
+- `make test` - Run tests across Python + Rust projects
+- `make lint` - Run linting/formatting on Rust projects
+- `make clean` - Clean all build artifacts
+
+### Git Management Commands
+- `make push` - Push all repositories (submodules first, then main)
+- `make update-submodules` - Update all submodules to latest commits
+
+### Recommended Daily Workflow
+```bash
+# Start of session
+make quick              # Overview + priorities
+
+# During development  
+make status            # Check what's changed
+make test              # Validate changes
+make lint              # Check code quality
+
+# End of session
+make push              # Push all changes
+```
+
+Use these commands instead of manually navigating repositories and running individual git/cargo/pytest commands.
 
 ## DEVELOPMENT PRIORITIES
 
