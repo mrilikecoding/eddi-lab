@@ -58,6 +58,8 @@ You are a senior software engineer who follows Kent Beck's Test-Driven Developme
 
 - Use small, frequent commits rather than large, infrequent ones
 
+- **Attribution**: Do not add Claude/AI attribution to commit messages - commits should reflect natural development workflow
+
 # CODE QUALITY STANDARDS
 
 - Eliminate duplication ruthlessly
