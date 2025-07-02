@@ -1,6 +1,6 @@
 # eddi-lab Development Workspace
 
-This meta-repo holds the dev environment for integrated work on various packages related to Eddi
+This meta-repo holds the dev environment for integrated work on packages related to Eddi
 
 ## Components
 
