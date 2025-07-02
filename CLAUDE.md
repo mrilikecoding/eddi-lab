@@ -160,6 +160,14 @@ Follow this process precisely, always prioritizing clean, well-tested code over 
 
 Always write one test at a time, make it run, then improve structure. Always run all the tests (except long-running tests) each time.
 
+# ERROR RECOVERY PROCEDURES
+
+When builds/tests fail:
+1. Never commit broken code - fix or revert immediately
+2. Use git bisect for regression hunting across repos
+3. Maintain known-good commit SHAs for each repo
+4. Have rollback procedures for each integration point
+
 # TDD CYCLE COMMANDS
 
 After each phase, run these commands:
@@ -203,13 +211,52 @@ Legacy Lumi → Analysis → Eddi Architecture → Component Migration → Featu
 - `spatial_light_controller.py` - Device control (→ Eddi-pad)
 - `sequencer.py` - Temporal coordination (→ Eddi)
 
+# CROSS-REPO FEATURE WORKFLOW
+
+Before starting any multi-repo feature:
+1. Create comprehensive TodoWrite list spanning all affected repos
+2. Map out dependency order (which repos must be completed first)
+3. Identify integration points and API contracts
+4. Plan test strategy across repo boundaries
+
+# INTEGRATION CHECKPOINT STRATEGY
+
+For features spanning multiple repos:
+1. Define clear API contracts first (write interface tests)
+2. Work in dependency order: data producers before consumers
+3. Create integration branches that can be merged atomically
+4. Use feature flags to enable/disable cross-repo functionality
+
+# CROSS-REPO STATE TRACKING
+
+Maintain context with:
+- Single TodoWrite list tracking all repos for the feature
+- Integration test suite that validates end-to-end functionality
+- Shared branch naming convention (feature/gesture-pipeline-v2)
+- API version compatibility matrix
+
 # EFFICIENT CONTEXT SWITCHING
 
-When switching between projects:
+When switching repos during feature development:
+1. Always commit with WIP prefix if incomplete
+2. Update TodoWrite with current repo status
+3. Use `make status` to verify clean state before switch
+4. Keep integration notes in TodoWrite for context
+5. Run integration tests after each repo completion
+
+When switching between projects (general):
 1. Always run `make status` to see what's uncommitted
 2. Commit or stash work before switching repositories  
 3. Use `make quick` to reorient to priorities
 4. Check TodoRead to see if tasks span multiple repos
+
+# CROSS-REPO ROLLBACK STRATEGY
+
+If integration fails:
+1. Each repo maintains feature branch independently
+2. Integration testing repo has clear rollback procedures
+3. API version compatibility ensures graceful degradation
+4. Feature flags allow selective component disable
 
 ## STARTING A NEW SESSION
 
@@ -402,6 +449,14 @@ Use these commands instead of manually navigating repositories and running indiv
 - Validate gesture segmentation performance
 - Demonstrate end-to-end pipeline functionality
 
+# PERFORMANCE MONITORING GUIDELINES
+
+During development, continuously monitor:
+- Device latency with simple benchmark tests
+- Memory usage in real-time components
+- WebSocket message throughput
+- Frame rate degradation in pose processing
+
 ## PERFORMANCE TARGETS
 
 - **Device Control**: <1ms latency for device commands
@@ -409,12 +464,28 @@ Use these commands instead of manually navigating repositories and running indiv
 - **Gesture Segmentation**: Real-time processing at 30fps minimum
 - **WebSocket Communication**: <10ms between components
 
+# API DESIGN PRINCIPLES
+
+For cross-repo communication:
+- Use versioned APIs with backward compatibility
+- Implement graceful degradation
+- Include comprehensive error responses
+- Design for async/real-time constraints
+
 # ARCHITECTURE PRINCIPLES
 
 - **Performance First**: Sub-millisecond latency for device communication
 - **Device Agnostic**: Unified interface for virtual and physical targets
 - **Spatial Intelligence**: Leverage proven spatial zone models
 - **Separation of Concerns**: Clear boundaries between pose analysis, gesture segmentation, spatial response, and device control
+
+# RESEARCH DOCUMENTATION STANDARDS
+
+For academic publication:
+- Maintain experiment logs in markdown format
+- Document all parameter choices with rationale
+- Keep performance benchmarks in version control
+- Record failed approaches and why they failed
 
 # RESEARCH VALIDATION REQUIREMENTS
 
