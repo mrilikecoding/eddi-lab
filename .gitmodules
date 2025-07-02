@@ -6,7 +6,7 @@
 	url = https://github.com/mrilikecoding/eddi.git
 [submodule "eddi-pad"]
 	path = eddi-pad
-	url = ./eddi-pad
+	url = https://github.com/mrilikecoding/eddi-pad.git
 [submodule "skeleton-mhi"]
 	path = skeleton-mhi
-	url = ./skeleton-mhi
+	url = https://github.com/mrilikecoding/skeleton-mhi.git
