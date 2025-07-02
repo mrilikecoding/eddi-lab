@@ -148,8 +148,98 @@ Legacy Lumi → Analysis → Eddi Architecture → Component Migration → Featu
 
 1. **Check TodoRead** to see current task status
 2. **Review open issues** with `gh issue list` to understand priorities
-3. **Identify the next logical component** to work on based on dependencies
-4. **Follow TDD cycle** for all development work
+3. **Consult roadmap** (Issue #16) to understand current phase and strategic priorities
+4. **Select work using priority framework** (see Project Management section below)
+5. **Follow TDD cycle** for all development work
+
+## PROJECT MANAGEMENT GUIDELINES
+
+### Issue Selection Framework
+
+When choosing what to work on next, evaluate issues using this priority matrix:
+
+#### Priority Assessment Criteria
+1. **Research Impact** (0-3 points): Does this enable/enhance academic publication?
+   - 3: Critical for Skeleton-MHI research paper
+   - 2: Significantly supports research validation
+   - 1: Provides research data or tools
+   - 0: No direct research impact
+
+2. **Legacy Replacement** (0-3 points): Does this maintain/improve Lumi functionality?
+   - 3: Core functionality that must be replaced
+   - 2: Important capability that enhances system
+   - 1: Nice-to-have improvement over legacy
+   - 0: New functionality not in legacy system
+
+3. **Performance Critical** (0-3 points): Required to meet latency/throughput targets?
+   - 3: Directly impacts <100ms end-to-end or <1ms device latency
+   - 2: Significantly affects system performance
+   - 1: Minor performance improvement
+   - 0: No performance impact
+
+4. **Dependency Blocker** (0-3 points): Are other high-priority items waiting?
+   - 3: Blocks multiple critical path items
+   - 2: Blocks one critical path item
+   - 1: Blocks medium priority items
+   - 0: No dependencies waiting
+
+5. **Technical Risk** (0-2 points): Addresses significant technical uncertainty?
+   - 2: High risk/uncertainty that could impact feasibility
+   - 1: Medium risk worth addressing early
+   - 0: Low risk, well-understood work
+
+#### Priority Calculation
+- **HIGH Priority** (10+ points): Work on immediately
+- **MEDIUM Priority** (6-9 points): Next in queue after HIGH items
+- **LOW Priority** (<6 points): Future work or when other priorities clear
+
+### Current Phase Priorities (Phase 1: Foundation & Research)
+
+#### Immediate Focus Areas
+1. **Skeleton-MHI Foundation**: Research critical path for academic publication
+2. **Device Control**: Replace legacy Lumi orchestration with high-performance Rust
+3. **Research Infrastructure**: Enable validation datasets and experimental workflows
+4. **Integration Foundations**: WebSocket APIs for component communication
+
+#### Work Selection Strategy
+- **Research First**: Prioritize items that enable academic publication
+- **Critical Path**: Focus on items that block other high-priority work
+- **Foundation Before Features**: Establish core abstractions before advanced capabilities
+- **Performance Validation**: Ensure performance targets are met early
+
+### Decision-Making Process
+
+#### Daily Work Selection
+1. **Check current roadmap phase** (Issue #16) for strategic context
+2. **Review active todos** for in-progress work
+3. **Assess available issues** using priority framework above
+4. **Choose highest-priority item** that matches available time/energy
+5. **Check dependencies** to ensure prerequisites are met
+
+#### When Priorities Conflict
+1. **Research vs. Implementation**: Favor research in Phase 1 (academic deadlines)
+2. **Multiple High-Priority Items**: Choose based on technical dependencies
+3. **Uncertain Priorities**: Consult roadmap goals and success criteria
+4. **Blocked Work**: Switch to unblocked items while resolving dependencies
+
+#### Weekly Planning
+- **Monday**: Review roadmap progress and adjust weekly focus
+- **Wednesday**: Check if current work aligns with strategic priorities  
+- **Friday**: Assess week's progress and plan next week's priorities
+
+### Success Metrics
+
+#### Individual Issue Success
+- All acceptance criteria met
+- Performance targets achieved (where applicable)
+- Tests passing with good coverage
+- Documentation updated appropriately
+
+#### Phase Success (Current: Phase 1)
+- Research validation capability established
+- Legacy Lumi functionality maintained/improved
+- Performance targets met for critical path
+- Integration foundations solid for Phase 2
 
 ## ISSUE ORGANIZATION STRATEGY
 
