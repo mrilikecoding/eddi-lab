@@ -160,6 +160,13 @@ Follow this process precisely, always prioritizing clean, well-tested code over 
 
 Always write one test at a time, make it run, then improve structure. Always run all the tests (except long-running tests) each time.
 
+# TDD CYCLE COMMANDS
+
+After each phase, run these commands:
+- **Red Phase**: `make test` (should show failing test)
+- **Green Phase**: `make test` (all tests pass) + `make lint`
+- **Refactor Phase**: `make test` (verify no behavior change)
+
 # PROJECT ECOSYSTEM OVERVIEW
 
 This is the eddi-lab meta-repository containing 4 integrated projects:
@@ -195,6 +202,14 @@ Legacy Lumi → Analysis → Eddi Architecture → Component Migration → Featu
 - `mhi.py` - Motion History Images (→ Skeleton-MHI)
 - `spatial_light_controller.py` - Device control (→ Eddi-pad)
 - `sequencer.py` - Temporal coordination (→ Eddi)
+
+# EFFICIENT CONTEXT SWITCHING
+
+When switching between projects:
+1. Always run `make status` to see what's uncommitted
+2. Commit or stash work before switching repositories  
+3. Use `make quick` to reorient to priorities
+4. Check TodoRead to see if tasks span multiple repos
 
 ## STARTING A NEW SESSION
 
@@ -240,6 +255,14 @@ When choosing what to work on next, evaluate issues using this priority matrix:
    - 2: High risk/uncertainty that could impact feasibility
    - 1: Medium risk worth addressing early
    - 0: Low risk, well-understood work
+
+# PRIORITY DECISION TREE
+
+When multiple HIGH priority items exist:
+1. Research deadlines > Implementation deadlines
+2. Blockers > Non-blockers
+3. Known solutions > Experimental work
+4. Critical path > Parallel work
 
 #### Priority Calculation
 - **HIGH Priority** (10+ points): Work on immediately
@@ -379,12 +402,27 @@ Use these commands instead of manually navigating repositories and running indiv
 - Validate gesture segmentation performance
 - Demonstrate end-to-end pipeline functionality
 
-## ARCHITECTURE PRINCIPLES
+## PERFORMANCE TARGETS
+
+- **Device Control**: <1ms latency for device commands
+- **End-to-End Pipeline**: <100ms total latency 
+- **Gesture Segmentation**: Real-time processing at 30fps minimum
+- **WebSocket Communication**: <10ms between components
+
+# ARCHITECTURE PRINCIPLES
 
 - **Performance First**: Sub-millisecond latency for device communication
 - **Device Agnostic**: Unified interface for virtual and physical targets
 - **Spatial Intelligence**: Leverage proven spatial zone models
 - **Separation of Concerns**: Clear boundaries between pose analysis, gesture segmentation, spatial response, and device control
+
+# RESEARCH VALIDATION REQUIREMENTS
+
+For Skeleton-MHI research:
+- [ ] Baseline MHI implementation for comparison
+- [ ] Performance benchmarks vs traditional MHI
+- [ ] Dataset for gesture segmentation validation
+- [ ] Metrics: accuracy, latency, robustness
 
 ## RESEARCH GOALS
 
