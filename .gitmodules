@@ -10,3 +10,6 @@
 [submodule "skeleton-mhi"]
 	path = skeleton-mhi
 	url = https://github.com/mrilikecoding/skeleton-mhi.git
+[submodule "llm-orc"]
+	path = llm-orc
+	url = https://github.com/mrilikecoding/llm-orc.git
