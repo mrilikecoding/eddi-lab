@@ -30,9 +30,9 @@ update-submodules:
 	git submodule update --remote --merge
 
 install-dev:
-	@echo "📦 Installing Python packages in development mode..."
-	pip install -e ./StreamPoseML
-	pip install -e ./eddi
+	@echo "📦 Installing Python packages in isolated environments..."
+	cd StreamPoseML && source .venv/bin/activate && pip install -e ".[dev]"
+	cd eddi && source .venv/bin/activate && pip install -e ".[dev]"
 	@echo "🦀 Checking Rust projects..."
 	cd eddi-pad && cargo check
 	cd skeleton-mhi && cargo check
@@ -47,13 +47,13 @@ build:
 
 test:
 	@echo "🧪 Running tests across all projects..."
-	# Python tests
-	-cd StreamPoseML && python -m pytest
-	-cd eddi && python -m pytest
+	# Python tests in isolated environments
+	-cd StreamPoseML && source .venv/bin/activate && python -m pytest
+	-cd eddi && source .venv/bin/activate && python -m pytest
 	# Rust tests
 	cd eddi-pad && cargo test
 	cd skeleton-mhi && cargo test
-	# Integration tests if they exist
+	# Integration tests
 	-python -m pytest integration-tests/ 2>/dev/null || echo "No integration tests found"
 	@echo "✅ All tests completed!"
 
