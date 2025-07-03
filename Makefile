@@ -11,6 +11,7 @@ help:
 	@echo "Development:"
 	@echo "  build           - Build all Rust projects (eddi-pad, skeleton-mhi)"
 	@echo "  test            - Run all tests across projects"
+	@echo "  test-<project>  - Run tests for specific project (streampose, eddi, llm-orc, eddi-pad, skeleton-mhi, integration)"
 	@echo "  lint            - Run linting and formatting"
 	@echo "  clean           - Clean build artifacts"
 	@echo ""
@@ -33,6 +34,7 @@ install-dev:
 	@echo "📦 Installing Python packages in isolated environments..."
 	cd StreamPoseML && source .venv/bin/activate && pip install -e ".[dev]"
 	cd eddi && source .venv/bin/activate && pip install -e ".[dev]"
+	cd llm-orc && source .venv/bin/activate && pip install -e ".[dev]"
 	@echo "🦀 Checking Rust projects..."
 	cd eddi-pad && cargo check
 	cd skeleton-mhi && cargo check
@@ -50,12 +52,38 @@ test:
 	# Python tests in isolated environments
 	-cd StreamPoseML && source .venv/bin/activate && python -m pytest
 	-cd eddi && source .venv/bin/activate && python -m pytest
+	-cd llm-orc && source .venv/bin/activate && python -m pytest
 	# Rust tests
 	cd eddi-pad && cargo test
 	cd skeleton-mhi && cargo test
 	# Integration tests
 	-python -m pytest integration-tests/ 2>/dev/null || echo "No integration tests found"
 	@echo "✅ All tests completed!"
+
+# Individual project tests
+test-streampose:
+	@echo "🧪 Running StreamPoseML tests..."
+	cd StreamPoseML && source .venv/bin/activate && python -m pytest
+
+test-eddi:
+	@echo "🧪 Running Eddi tests..."
+	cd eddi && source .venv/bin/activate && python -m pytest
+
+test-llm-orc:
+	@echo "🧪 Running LLM-ORC tests..."
+	cd llm-orc && source .venv/bin/activate && python -m pytest
+
+test-eddi-pad:
+	@echo "🧪 Running Eddi-pad tests..."
+	cd eddi-pad && cargo test
+
+test-skeleton-mhi:
+	@echo "🧪 Running Skeleton-MHI tests..."
+	cd skeleton-mhi && cargo test
+
+test-integration:
+	@echo "🧪 Running integration tests..."
+	python -m pytest integration-tests/
 
 # Linting and formatting
 lint:
@@ -93,6 +121,9 @@ status:
 	@echo ""
 	@echo "🦴 Skeleton-MHI:"
 	cd skeleton-mhi && git status --short
+	@echo ""
+	@echo "🎭 LLM-ORC:"
+	cd llm-orc && git status --short
 
 # Push all repositories
 push:
@@ -102,6 +133,7 @@ push:
 	-cd eddi && git push
 	-cd eddi-pad && git push
 	-cd skeleton-mhi && git push
+	-cd llm-orc && git push
 	@echo "Pushing main repository..."
 	git push
 	@echo "✅ All repositories pushed!"
@@ -124,6 +156,9 @@ issues:
 	@echo ""
 	@echo "🦴 Skeleton-MHI:"
 	-cd skeleton-mhi && gh issue list --state open
+	@echo ""
+	@echo "🎭 LLM-ORC:"
+	-cd llm-orc && gh issue list --state open
 
 roadmap:
 	@echo "🗺️ Current Roadmap and Strategic Priorities:"

@@ -250,6 +250,29 @@ When switching between projects (general):
 3. Use `make quick` to reorient to priorities
 4. Check TodoRead to see if tasks span multiple repos
 
+## Testing in Multi-Repo Context
+
+**Running tests for specific projects:**
+```bash
+# From eddi-lab root - run specific project tests
+make test-llm-orc        # LLM Orchestra tests
+make test-streampose     # StreamPoseML tests  
+make test-eddi          # Eddi tests
+make test-eddi-pad      # Eddi-pad tests
+make test-skeleton-mhi  # Skeleton-MHI tests
+make test-integration   # Cross-repo integration tests
+
+# Or navigate to specific repo
+cd llm-orc && make test
+cd eddi-pad && cargo test
+```
+
+**Always verify correct context:**
+- Use `pwd` to confirm current directory
+- Run `make test` from project root, not eddi-lab root
+- Integration tests belong in eddi-lab/integration-tests/
+- Unit tests belong in individual project test directories
+
 # CROSS-REPO ROLLBACK STRATEGY
 
 If integration fails:
