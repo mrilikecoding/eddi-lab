@@ -34,7 +34,7 @@ install-dev:
 	@echo "📦 Installing Python packages in isolated environments..."
 	cd StreamPoseML && source .venv/bin/activate && pip install -e ".[dev]"
 	cd eddi && source .venv/bin/activate && pip install -e ".[dev]"
-	cd llm-orc && source .venv/bin/activate && pip install -e ".[dev]"
+	cd llm-orc && uv sync
 	@echo "🦀 Checking Rust projects..."
 	cd eddi-pad && cargo check
 	cd skeleton-mhi && cargo check
@@ -52,7 +52,7 @@ test:
 	# Python tests in isolated environments
 	-cd StreamPoseML && source .venv/bin/activate && python -m pytest
 	-cd eddi && source .venv/bin/activate && python -m pytest
-	-cd llm-orc && source .venv/bin/activate && python -m pytest
+	-cd llm-orc && uv run pytest
 	# Rust tests
 	cd eddi-pad && cargo test
 	cd skeleton-mhi && cargo test
@@ -71,7 +71,7 @@ test-eddi:
 
 test-llm-orc:
 	@echo "🧪 Running LLM-ORC tests..."
-	cd llm-orc && source .venv/bin/activate && python -m pytest
+	cd llm-orc && uv run pytest
 
 test-eddi-pad:
 	@echo "🧪 Running Eddi-pad tests..."
