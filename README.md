@@ -37,18 +37,39 @@ Devices  (pose data)   (gesture      (spatial (device   (output)
 
 ## Development Workflow
 
+### Development Environment
+
+This ecosystem uses modern tooling for optimal developer experience:
+- **Python Projects**: `uv` for fast dependency management (eddi, llm-orc)
+- **Rust Projects**: `cargo` for building and testing (eddi-pad, skeleton-mhi)
+- **StreamPoseML**: Traditional pip/venv (complex legacy dependencies)
+
 ### Running Tests
 ```bash
 # Run all tests across projects
 make test
 
 # Run tests for specific projects
-make test-streampose    # StreamPoseML tests
-make test-eddi         # Eddi tests  
-make test-llm-orc      # LLM Orchestra tests
-make test-eddi-pad     # Eddi-pad tests
-make test-skeleton-mhi # Skeleton-MHI tests
+make test-streampose    # StreamPoseML tests (pip/venv)
+make test-eddi         # Eddi tests (uv)
+make test-llm-orc      # LLM Orchestra tests (uv)
+make test-eddi-pad     # Eddi-pad tests (cargo)
+make test-skeleton-mhi # Skeleton-MHI tests (cargo)
 make test-integration  # Cross-repo integration tests
+```
+
+### Working on Individual Projects
+```bash
+# For uv-enabled projects (eddi, llm-orc)
+cd eddi && make test          # or: uv run pytest
+cd llm-orc && make test       # or: uv run pytest
+
+# For Rust projects
+cd eddi-pad && cargo test
+cd skeleton-mhi && cargo test
+
+# For StreamPoseML (traditional workflow)
+cd StreamPoseML && source .venv/bin/activate && python -m pytest
 ```
 
 ### Project Management

@@ -255,23 +255,31 @@ When switching between projects (general):
 **Running tests for specific projects:**
 ```bash
 # From eddi-lab root - run specific project tests
-make test-llm-orc        # LLM Orchestra tests
-make test-streampose     # StreamPoseML tests  
-make test-eddi          # Eddi tests
-make test-eddi-pad      # Eddi-pad tests
-make test-skeleton-mhi  # Skeleton-MHI tests
+make test-llm-orc        # LLM Orchestra tests (uv)
+make test-streampose     # StreamPoseML tests (pip/venv)
+make test-eddi          # Eddi tests (uv)
+make test-eddi-pad      # Eddi-pad tests (cargo)
+make test-skeleton-mhi  # Skeleton-MHI tests (cargo)
 make test-integration   # Cross-repo integration tests
 
-# Or navigate to specific repo
-cd llm-orc && make test
-cd eddi-pad && cargo test
+# Or navigate to specific repo with appropriate tooling
+cd llm-orc && make test     # Uses: uv run pytest
+cd eddi && make test        # Uses: uv run pytest  
+cd eddi-pad && cargo test   # Uses: cargo test
+cd StreamPoseML && source .venv/bin/activate && python -m pytest
 ```
+
+**Development Environment Context:**
+- **uv Projects** (llm-orc, eddi): Fast dependency management, isolated .venv
+- **Cargo Projects** (eddi-pad, skeleton-mhi): Rust toolchain
+- **Legacy Python** (StreamPoseML): Traditional pip/venv workflow
 
 **Always verify correct context:**
 - Use `pwd` to confirm current directory
 - Run `make test` from project root, not eddi-lab root
 - Integration tests belong in eddi-lab/integration-tests/
 - Unit tests belong in individual project test directories
+- Check which tooling the project uses (uv vs pip vs cargo)
 
 # CROSS-REPO ROLLBACK STRATEGY
 
