@@ -82,6 +82,88 @@ Separate all changes into two distinct types to maintain clean development histo
 - Use small, frequent commits rather than large, infrequent ones
 - Commit messages should clearly state whether the commit contains structural or behavioral changes
 
+# GITHUB CLI WORKFLOW
+
+**IMPORTANT**: Use `gh` (GitHub CLI) for ALL git operations instead of raw git commands. This ensures proper integration with GitHub features and workflows.
+
+## Required GitHub CLI Usage
+
+### Instead of git push:
+```bash
+# ❌ Don't use raw git
+git push
+
+# ✅ Use gh instead  
+gh repo sync
+# or for specific branches:
+gh repo push
+```
+
+### Branch and PR Operations:
+```bash
+# ❌ Don't use raw git for branch operations
+git checkout -b feature-branch
+git push --set-upstream origin feature-branch
+
+# ✅ Use gh for branch operations
+gh repo fork  # if needed
+gh repo clone mrilikecoding/repo-name
+gh pr create --title "Feature" --body "Description"
+gh pr checkout 123
+```
+
+### Status and History:
+```bash
+# ✅ Use gh for repository status
+gh repo view
+gh pr list 
+gh issue list
+gh run list  # workflow status
+```
+
+## Workflow Monitoring
+
+After any push operation, ALWAYS monitor GitHub Actions workflows:
+
+### Watch Workflow Execution:
+```bash
+# Push and immediately watch workflows
+gh repo push && gh run watch
+
+# List recent workflow runs
+gh run list --limit 5
+
+# View specific workflow run
+gh run view <run-id>
+
+# Watch live workflow logs
+gh run watch <run-id>
+```
+
+### Required Workflow Checks:
+1. **After every push**: Run `gh run list` to see triggered workflows
+2. **Monitor until completion**: Use `gh run watch` for active runs  
+3. **Check for failures**: Address any workflow failures before proceeding
+4. **Never ignore failing workflows**: Fix issues or revert problematic changes
+
+### Cross-Repo Workflow Coordination:
+When pushing to multiple repos with interdependent workflows:
+```bash
+# Push to dependency repos first, watch workflows complete
+cd dependency-repo && gh repo push && gh run watch
+
+# Only proceed to dependent repos after workflows pass
+cd dependent-repo && gh repo push && gh run watch
+```
+
+## GitHub CLI Integration Rules
+
+- **NEVER use raw git push**: Always use `gh repo push` or `gh repo sync`
+- **Watch all workflows**: Use `gh run watch` after every push
+- **Monitor cross-repo impacts**: Check workflows in all affected repositories
+- **Address failures immediately**: Never leave failing workflows unresolved
+- **Use gh for all GitHub operations**: Issues, PRs, releases, workflows
+
 ## WRITING STYLE GUIDELINES
 
 Based on recent research (Kobak et al., Science Advances 2025) showing LLM usage patterns in scientific writing, follow these guidelines to maintain natural, human-like writing:
@@ -583,13 +665,14 @@ The Makefile provides essential commands for managing the multi-repo ecosystem e
 - `make clean` - Clean all build artifacts
 
 ### Git Management Commands
-- `make push` - Push all repositories (submodules first, then main)
+- `make push` - Push all repositories using gh (submodules first, then main, with workflow monitoring)
 - `make update-submodules` - Update all submodules to latest commits
 
 ### Recommended Daily Workflow
 ```bash
 # Start of session
 make quick              # Overview + priorities
+gh run list            # Check workflow status
 
 # During development  
 make status            # Check what's changed
@@ -597,7 +680,8 @@ make test              # Validate changes
 make lint              # Check code quality
 
 # End of session
-make push              # Push all changes
+make push              # Push all changes using gh + monitor workflows
+gh run watch           # Monitor triggered workflows
 ```
 
 Use these commands instead of manually navigating repositories and running individual git/cargo/pytest commands.
