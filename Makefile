@@ -33,7 +33,7 @@ update-submodules:
 install-dev:
 	@echo "📦 Installing Python packages in isolated environments..."
 	cd StreamPoseML && source .venv/bin/activate && pip install -e ".[dev]"
-	cd eddi && source .venv/bin/activate && pip install -e ".[dev]"
+	cd eddi && uv sync --dev
 	cd llm-orc && uv sync
 	@echo "🦀 Checking Rust projects..."
 	cd eddi-pad && cargo check
@@ -51,7 +51,7 @@ test:
 	@echo "🧪 Running tests across all projects..."
 	# Python tests in isolated environments
 	-cd StreamPoseML && source .venv/bin/activate && python -m pytest
-	-cd eddi && source .venv/bin/activate && python -m pytest
+	-cd eddi && uv run pytest
 	-cd llm-orc && uv run pytest
 	# Rust tests
 	cd eddi-pad && cargo test
@@ -67,7 +67,7 @@ test-streampose:
 
 test-eddi:
 	@echo "🧪 Running Eddi tests..."
-	cd eddi && source .venv/bin/activate && python -m pytest
+	cd eddi && uv run pytest
 
 test-llm-orc:
 	@echo "🧪 Running LLM-ORC tests..."
