@@ -306,6 +306,196 @@ Legacy Lumi → Analysis → Eddi Architecture → Component Migration → Featu
 - `spatial_light_controller.py` - Device control (→ Eddi-pad)
 - `sequencer.py` - Temporal coordination (→ Eddi)
 
+# GIT SUBMODULE WORKFLOW
+
+## Submodule Branch Management Rules
+
+### NEVER Work in Detached HEAD State
+- Always ensure submodules are on proper branches before making changes
+- Use `git submodule foreach 'git checkout main || git checkout -b feature/branch-name'`
+- Verify branch state with `git submodule foreach 'git branch --show-current'`
+
+### Required Submodule Commands Before Any Work
+
+```bash
+# 1. Initialize and update all submodules
+git submodule update --init --recursive
+
+# 2. Ensure all submodules are on proper branches (not detached HEAD)
+git submodule foreach 'git checkout main'
+
+# 3. Verify branch status
+git submodule foreach 'echo "=== $name ===" && git branch --show-current'
+```
+
+### Submodule Development Workflow
+
+#### Starting Work on Cross-Repo Feature
+1. **Use existing branch naming conventions**:
+   ```bash
+   # For single-repo issues: issue-{number}-{short-description}
+   git checkout -b issue-42-fix-device-latency
+   
+   # For multi-repo features: feature/{epic-name}-{component}
+   git checkout -b feature/gesture-pipeline-pose-extraction
+   
+   # Apply same branch name to affected submodules
+   git submodule foreach 'git checkout -b feature/gesture-pipeline-pose-extraction'
+   ```
+
+2. **Always verify submodule state before committing**:
+   ```bash
+   git submodule foreach 'git status'
+   git submodule status  # Check for + (new commits) or - (detached HEAD)
+   ```
+
+#### Committing Submodule Changes
+```bash
+# 1. Commit in submodule first (NO AI attribution - per CLAUDE.md line 4)
+cd submodule-name
+git add .
+git commit -m "Implement feature component"
+git push origin feature/gesture-pipeline-pose-extraction
+
+# 2. Return to meta-repo and commit submodule reference update
+cd ..
+git add submodule-name
+git commit -m "Update submodule-name reference for feature"
+git push origin feature/gesture-pipeline-pose-extraction
+```
+
+#### Avoiding Detached HEAD States
+- **NEVER use `git submodule update` without `--remote` on existing work**
+- **ALWAYS check branch status after submodule operations**
+- **Use `git submodule foreach` for batch branch operations**
+
+### Submodule Troubleshooting
+
+#### If Submodule is in Detached HEAD:
+```bash
+cd problematic-submodule
+git checkout main  # or appropriate branch
+git pull origin main
+cd ..
+git add problematic-submodule
+git commit -m "Fix detached HEAD in problematic-submodule"
+```
+
+#### Clean Slate Setup (for new clones):
+```bash
+# Complete fresh setup
+git clone --recurse-submodules https://github.com/user/eddi-lab.git
+cd eddi-lab
+git submodule foreach 'git checkout main'
+git submodule foreach 'git pull origin main'
+```
+
+### Make Command Updates
+
+Update the `make push` command to be safer:
+```bash
+# Before pushing, verify no submodules are in detached HEAD
+git submodule foreach 'git branch --show-current | grep -q "^[^(]" || (echo "ERROR: $name in detached HEAD" && exit 1)'
+
+# Push submodules first, then meta-repo
+git submodule foreach 'git push origin $(git branch --show-current) && gh run watch'
+git push origin $(git branch --show-current) && gh run watch
+```
+
+# DEVELOPMENT ENVIRONMENT MANAGEMENT
+
+## Project-Specific Tooling (All Python Projects Use uv Now)
+- **eddi, llm-orc, StreamPoseML**: Use `uv` (fast Python package manager)
+- **eddi-pad, skeleton-mhi**: Use `cargo` (Rust toolchain)
+
+## Environment Setup Per Project
+```bash
+# uv projects (eddi, llm-orc, StreamPoseML)
+cd eddi  # or llm-orc or StreamPoseML
+uv sync  # Sets up .venv automatically
+
+# Cargo projects (eddi-pad, skeleton-mhi)  
+cd eddi-pad  # or skeleton-mhi
+cargo build  # Manages dependencies automatically
+```
+
+## NO Meta-Repo Environment
+- **No `.envrc`** - removed to prevent confusion across different tooling
+- **Each project manages its own environment**
+- **Use `make` commands for cross-project operations**
+
+# INTEGRATION TESTING STRATEGY
+
+## Meta-Repo Integration Test Design
+
+### Integration Test Environment Setup
+```bash
+# Meta-repo integration tests use uv for test orchestration
+cd integration-tests
+uv sync  # Sets up test environment with all necessary clients
+
+# Tests can import and use components from submodules
+# Each submodule must be properly set up first:
+uv run pytest test_cross_repo_integration.py
+```
+
+### Integration Test Architecture
+
+#### Test Categories
+1. **API Contract Tests**: Validate WebSocket/HTTP APIs between components
+2. **Data Pipeline Tests**: End-to-end data flow validation
+3. **Performance Integration Tests**: Latency and throughput across components
+4. **Error Propagation Tests**: How errors cascade through the system
+
+#### Test Structure
+```python
+# integration-tests/test_gesture_pipeline.py
+import pytest
+from streampose_client import StreamPoseClient
+from eddi_client import EddiClient
+from eddi_pad_client import EddiPadClient
+
+@pytest.fixture
+def pipeline_clients():
+    """Set up clients for all pipeline components"""
+    return {
+        'pose': StreamPoseClient(),
+        'spatial': EddiClient(), 
+        'device': EddiPadClient()
+    }
+
+def test_end_to_end_gesture_pipeline(pipeline_clients):
+    """Test complete gesture → device control pipeline"""
+    # This test validates the entire data flow
+    pass
+```
+
+#### Integration Test Requirements
+- **Each component must expose test interfaces** (REST/WebSocket endpoints)
+- **Integration tests run against real component APIs**, not mocks
+- **Performance assertions included** for latency targets
+- **Cross-repo changes must pass integration tests** before merge
+
+### TDD for Integration Tests
+
+#### Integration TDD Cycle
+1. **Write failing integration test** that describes desired cross-repo behavior
+2. **Implement minimum in each submodule** to make test pass
+3. **Run integration test** to verify cross-repo communication
+4. **Refactor submodule implementations** while keeping integration test passing
+
+#### Integration Test Execution
+```bash
+# Run all integration tests
+make test-integration
+
+# Run specific integration test suite
+cd integration-tests && uv run pytest test_gesture_pipeline.py -v
+
+# Run integration tests with performance monitoring
+cd integration-tests && uv run pytest --benchmark-only
+```
+
 # CROSS-REPO FEATURE WORKFLOW
 
 Before starting any multi-repo feature:
