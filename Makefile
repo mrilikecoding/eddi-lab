@@ -1,4 +1,4 @@
-.PHONY: help setup update-submodules install-dev test clean status push build lint issues roadmap priority quick
+.PHONY: help setup update-submodules install-dev test clean status push build lint issues roadmap priority quick submodule-status
 
 help:
 	@echo "Eddi-lab Ecosystem Management"
@@ -24,16 +24,25 @@ help:
 	@echo "  roadmap         - Show current roadmap and priorities (Issue #16)"
 	@echo "  priority        - Show priority assessment framework"
 	@echo "  quick           - Quick status and top development priorities"
+	@echo "  submodule-status - Detailed submodule branch and commit status"
 
 setup: update-submodules install-dev
 
 update-submodules:
+	@echo "⚠️  Checking for detached HEAD states..."
+	git submodule foreach 'git branch --show-current | grep -q "^[^(]" || (echo "ERROR: $$name in detached HEAD" && exit 1)'
+	@echo "📥 Updating submodules..."
 	git submodule update --remote --merge
+	@echo "🔄 Ensuring all submodules are on proper branches..."
+	git submodule foreach 'git checkout main || echo "Warning: $$name not on main branch"'
 
 install-dev:
 	@echo "📦 Installing Python packages in isolated environments..."
-	cd StreamPoseML && source .venv/bin/activate && pip install -e ".[dev]"
+	@echo "🐍 StreamPoseML (uv):"
+	cd StreamPoseML && uv sync --dev
+	@echo "🐍 Eddi (uv):"
 	cd eddi && uv sync --dev
+	@echo "🐍 LLM-ORC (uv):"
 	cd llm-orc && uv sync
 	@echo "🦀 Checking Rust projects..."
 	cd eddi-pad && cargo check
@@ -83,7 +92,7 @@ test-skeleton-mhi:
 
 test-integration:
 	@echo "🧪 Running integration tests..."
-	python -m pytest integration-tests/
+	cd integration-tests && uv run pytest
 
 # Linting and formatting
 lint:
@@ -125,18 +134,36 @@ status:
 	@echo "🎭 LLM-ORC:"
 	cd llm-orc && git status --short
 
-# Push all repositories
+# Push all repositories with workflow monitoring
 push:
 	@echo "⬆️ Pushing all repositories..."
-	@echo "Pushing submodules first..."
-	-cd StreamPoseML && git push
-	-cd eddi && git push
-	-cd eddi-pad && git push
-	-cd skeleton-mhi && git push
-	-cd llm-orc && git push
-	@echo "Pushing main repository..."
-	git push
-	@echo "✅ All repositories pushed!"
+	@echo "🔍 Checking for detached HEAD states..."
+	git submodule foreach 'git branch --show-current | grep -q "^[^(]" || (echo "ERROR: $$name in detached HEAD" && exit 1)'
+	@echo "📤 Pushing submodules first..."
+	-cd StreamPoseML && git push && gh run list --limit 1
+	-cd eddi && git push && gh run list --limit 1
+	-cd eddi-pad && git push && gh run list --limit 1
+	-cd skeleton-mhi && git push && gh run list --limit 1
+	-cd llm-orc && git push && gh run list --limit 1
+	@echo "📤 Pushing main repository..."
+	git push && gh run list --limit 1
+	@echo "✅ All repositories pushed! Monitor workflows with: gh run watch"
+
+# Detailed submodule status for debugging
+submodule-status:
+	@echo "🔍 Detailed Submodule Status:"
+	@echo ""
+	@echo "📊 Submodule Overview:"
+	git submodule status
+	@echo ""
+	@echo "🌿 Branch Status:"
+	git submodule foreach 'echo "=== $$name ===" && git branch --show-current'
+	@echo ""
+	@echo "📝 Commit Status:"
+	git submodule foreach 'echo "=== $$name ===" && git log --oneline -1'
+	@echo ""
+	@echo "🔄 Remote Status:"
+	git submodule foreach 'echo "=== $$name ===" && git status --porcelain'
 
 # Project management targets
 issues:
