@@ -1,4 +1,4 @@
-.PHONY: help setup update-submodules install-dev test clean status push build lint issues roadmap priority quick submodule-status
+.PHONY: help setup update-submodules install-dev test clean status push build lint issues roadmap priority quick submodule-status push-with-monitoring workflow-status watch-workflows workflow-failures
 
 help:
 	@echo "Eddi-lab Ecosystem Management"
@@ -25,6 +25,12 @@ help:
 	@echo "  priority        - Show priority assessment framework"
 	@echo "  quick           - Quick status and top development priorities"
 	@echo "  submodule-status - Detailed submodule branch and commit status"
+	@echo ""
+	@echo "Enhanced Workflow Monitoring:"
+	@echo "  push-with-monitoring - Push with comprehensive workflow monitoring" 
+	@echo "  workflow-status      - Show ecosystem-wide workflow health"
+	@echo "  watch-workflows      - Watch latest runs across all repositories"
+	@echo "  workflow-failures    - Show and help debug failed workflows"
 
 setup: update-submodules install-dev
 
@@ -224,3 +230,42 @@ quick:
 	@echo "  1. Run 'make roadmap' for strategic context"
 	@echo "  2. Run 'make issues' to see all available work"
 	@echo "  3. Follow TDD methodology in CLAUDE.md"
+
+# Enhanced Workflow Monitoring Commands
+
+# Push with comprehensive workflow monitoring  
+push-with-monitoring:
+	@./scripts/enhanced-push.sh
+
+# Show ecosystem-wide workflow health
+workflow-status:
+	@echo "📊 Ecosystem Workflow Health:"
+	@echo ""
+	@./scripts/repo-workflow-status.sh . "Main Repository"
+	@./scripts/repo-workflow-status.sh StreamPoseML "StreamPoseML"
+	@./scripts/repo-workflow-status.sh eddi "Eddi"
+	@./scripts/repo-workflow-status.sh eddi-pad "Eddi-pad"
+	@./scripts/repo-workflow-status.sh skeleton-mhi "Skeleton-MHI"
+	@./scripts/repo-workflow-status.sh llm-orc "LLM-ORC"
+
+# Watch latest runs across all repositories
+watch-workflows:
+	@echo "👀 Watching Latest Workflow Runs:"
+	@echo ""
+	@./scripts/find-active-runs.sh
+
+# Show and help debug failed workflows
+workflow-failures:
+	@echo "🔧 Failed Workflow Analysis:"
+	@echo ""
+	@./scripts/check-repo-failures.sh . "Main Repository"
+	@./scripts/check-repo-failures.sh StreamPoseML "StreamPoseML"
+	@./scripts/check-repo-failures.sh eddi "Eddi"
+	@./scripts/check-repo-failures.sh eddi-pad "Eddi-pad"
+	@./scripts/check-repo-failures.sh skeleton-mhi "Skeleton-MHI"
+	@./scripts/check-repo-failures.sh llm-orc "LLM-ORC"
+	@echo ""
+	@echo "💡 Debug Commands:"
+	@echo "   gh run view <run-id> --log-failed     # View failed job logs"
+	@echo "   gh run rerun <run-id>                 # Retry failed run"
+	@echo "   gh run view <run-id> --web            # Open in browser"

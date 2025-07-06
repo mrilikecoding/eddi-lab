@@ -35,14 +35,26 @@ Devices  (pose data)   (gesture      (spatial (device   (output)
    make setup
    ```
 
+3. Verify submodule health:
+   ```bash
+   make submodule-status
+   ```
+
+### Robust Submodule Workflow
+
+This ecosystem has been designed to prevent common submodule issues:
+- **Detached HEAD detection** prevents accidental commits in wrong state
+- **Safe update operations** with automatic branch verification
+- **Enhanced push monitoring** with GitHub Actions integration
+- **Cross-repo failure tracking** for quick debugging
+
 ## Development Workflow
 
 ### Development Environment
 
 This ecosystem uses modern tooling for optimal developer experience:
-- **Python Projects**: `uv` for fast dependency management (eddi, llm-orc)
+- **Python Projects**: `uv` for fast dependency management (eddi, llm-orc, StreamPoseML)
 - **Rust Projects**: `cargo` for building and testing (eddi-pad, skeleton-mhi)
-- **StreamPoseML**: Traditional pip/venv (complex legacy dependencies)
 
 ### Running Tests
 ```bash
@@ -50,7 +62,7 @@ This ecosystem uses modern tooling for optimal developer experience:
 make test
 
 # Run tests for specific projects
-make test-streampose    # StreamPoseML tests (pip/venv)
+make test-streampose    # StreamPoseML tests (uv)
 make test-eddi         # Eddi tests (uv)
 make test-llm-orc      # LLM Orchestra tests (uv)
 make test-eddi-pad     # Eddi-pad tests (cargo)
@@ -60,16 +72,14 @@ make test-integration  # Cross-repo integration tests
 
 ### Working on Individual Projects
 ```bash
-# For uv-enabled projects (eddi, llm-orc)
+# For uv-enabled projects (eddi, llm-orc, StreamPoseML)
 cd eddi && make test          # or: uv run pytest
 cd llm-orc && make test       # or: uv run pytest
+cd StreamPoseML && uv run pytest
 
 # For Rust projects
 cd eddi-pad && cargo test
 cd skeleton-mhi && cargo test
-
-# For StreamPoseML (traditional workflow)
-cd StreamPoseML && source .venv/bin/activate && python -m pytest
 ```
 
 ### Project Management
@@ -80,12 +90,27 @@ make issues   # List open issues across all repositories
 make roadmap  # Show current strategic roadmap
 ```
 
-### Other Commands
+### Enhanced Workflow Monitoring
 ```bash
+# Enhanced push with comprehensive monitoring
+make push-with-monitoring
+
+# Ecosystem health monitoring
+make workflow-status      # View GitHub Actions status across all repos
+make watch-workflows      # Find and monitor active workflow runs
+make workflow-failures    # Analyze recent failures with debug commands
+
+# Traditional commands
 make build    # Build all Rust projects
 make lint     # Run linting and formatting
 make clean    # Clean build artifacts
-make push     # Push all repositories
+make push     # Push all repositories (basic monitoring)
+```
+
+### Submodule Management
+```bash
+make submodule-status     # Detailed submodule branch and commit status
+make update-submodules    # Update all submodules with detached HEAD protection
 ```
 
 ## Architecture

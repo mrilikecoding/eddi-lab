@@ -390,16 +390,55 @@ git submodule foreach 'git checkout main'
 git submodule foreach 'git pull origin main'
 ```
 
-### Make Command Updates
+### Enhanced Workflow Monitoring Commands
 
-Update the `make push` command to be safer:
+The ecosystem now includes robust workflow monitoring via dedicated scripts:
+
+#### `make push-with-monitoring`
+- **Detached HEAD detection** before any push operations
+- **Individual submodule push** with workflow status reporting  
+- **Aggregated ecosystem health** summary after push
+- **Error handling** for repos without workflows
+- **Smart failure detection** and reporting
+
+#### `make workflow-status`
+- **Ecosystem-wide health dashboard** showing all repo statuses
+- **Visual status indicators**: ✅ success, ❌ failure, 🔄 in-progress, ℹ️ no workflows
+- **Latest workflow names** with current status
+
+#### `make watch-workflows` 
+- **Active run detection** across all repositories
+- **Smart recommendations** for monitoring specific runs
+- **Fallback to health dashboard** when no active runs
+
+#### `make workflow-failures`
+- **Recent failure analysis** across all repositories
+- **Run IDs provided** for easy debugging
+- **Built-in debug commands** (view logs, rerun, open in browser)
+
+#### Script Architecture
+All complex shell logic extracted to `/scripts/` directory:
+- `enhanced-push.sh` - Main push orchestration
+- `repo-workflow-status.sh` - Individual repo status checking
+- `push-submodule.sh` - Safe submodule push with monitoring
+- `find-active-runs.sh` - Cross-repo active run discovery  
+- `check-repo-failures.sh` - Failure analysis per repo
+
+### Safe Push Commands
+
+Use enhanced monitoring for safer operations:
 ```bash
-# Before pushing, verify no submodules are in detached HEAD
-git submodule foreach 'git branch --show-current | grep -q "^[^(]" || (echo "ERROR: $name in detached HEAD" && exit 1)'
+# Enhanced push with comprehensive monitoring
+make push-with-monitoring
 
-# Push submodules first, then meta-repo
-git submodule foreach 'git push origin $(git branch --show-current) && gh run watch'
-git push origin $(git branch --show-current) && gh run watch
+# Traditional push (still includes basic monitoring)
+make push
+
+# Monitor ecosystem health anytime
+make workflow-status
+
+# Debug failures
+make workflow-failures
 ```
 
 # DEVELOPMENT ENVIRONMENT MANAGEMENT
