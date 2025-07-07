@@ -257,11 +257,58 @@ Always write one test at a time, make it run, then improve structure. Always run
 
 # ERROR RECOVERY PROCEDURES
 
+## Build/Test Failures
 When builds/tests fail:
 1. Never commit broken code - fix or revert immediately
 2. Use git bisect for regression hunting across repos
 3. Maintain known-good commit SHAs for each repo
 4. Have rollback procedures for each integration point
+
+## Submodule Issues
+
+### Detached HEAD Detection
+If `make check-submodule-health` fails:
+```bash
+# Fix detached HEAD state
+cd problematic-submodule
+git checkout main  # or appropriate branch
+git pull origin main
+cd ..
+git add problematic-submodule
+git commit -m "Fix detached HEAD in problematic-submodule"
+```
+
+### Submodule Merge Conflicts
+When submodules show merge conflicts (<<<<<<< HEAD markers):
+1. **Identify the problem**:
+   ```bash
+   cd problematic-submodule
+   git status  # Shows conflicted files
+   ```
+
+2. **Resolve conflicts manually**:
+   - Edit conflicted files to remove `<<<<<<<`, `=======`, `>>>>>>>` markers
+   - Combine changes appropriately
+   - Test that code still compiles: `cargo check` or `uv run pytest`
+
+3. **Complete the merge**:
+   ```bash
+   git add <resolved-files>
+   git commit -m "Resolve merge conflicts in [description]"
+   git push
+   ```
+
+4. **Update main repo reference**:
+   ```bash
+   cd ..
+   git add problematic-submodule
+   git commit -m "Update submodule reference after conflict resolution"
+   ```
+
+### Preventing Submodule Issues
+- Always run `make check-submodule-health` before starting work
+- Use `make quick` daily to catch submodule problems early
+- Never work directly in submodule without checking branch first
 
 # TDD CYCLE COMMANDS
 

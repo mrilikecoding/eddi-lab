@@ -1,4 +1,4 @@
-.PHONY: help setup update-submodules install-dev test clean status push build lint issues roadmap priority quick submodule-status push-with-monitoring workflow-status watch-workflows workflow-failures
+.PHONY: help setup update-submodules install-dev test clean status push build lint issues roadmap priority quick submodule-status push-with-monitoring workflow-status watch-workflows workflow-failures check-submodule-health
 
 help:
 	@echo "Eddi-lab Ecosystem Management"
@@ -25,6 +25,7 @@ help:
 	@echo "  priority        - Show priority assessment framework"
 	@echo "  quick           - Quick status and top development priorities"
 	@echo "  submodule-status - Detailed submodule branch and commit status"
+	@echo "  check-submodule-health - Verify all submodules are in healthy state"
 	@echo ""
 	@echo "Enhanced Workflow Monitoring:"
 	@echo "  push-with-monitoring - Push with comprehensive workflow monitoring" 
@@ -34,9 +35,7 @@ help:
 
 setup: update-submodules install-dev
 
-update-submodules:
-	@echo "⚠️  Checking for detached HEAD states..."
-	git submodule foreach 'git branch --show-current | grep -q "^[^(]" || (echo "ERROR: $$name in detached HEAD" && exit 1)'
+update-submodules: check-submodule-health
 	@echo "📥 Updating submodules..."
 	git submodule update --remote --merge
 	@echo "🔄 Ensuring all submodules are on proper branches..."
@@ -141,10 +140,8 @@ status:
 	cd llm-orc && git status --short
 
 # Push all repositories with workflow monitoring
-push:
+push: check-submodule-health
 	@echo "⬆️ Pushing all repositories..."
-	@echo "🔍 Checking for detached HEAD states..."
-	git submodule foreach 'git branch --show-current | grep -q "^[^(]" || (echo "ERROR: $$name in detached HEAD" && exit 1)'
 	@echo "📤 Pushing submodules first..."
 	-cd StreamPoseML && git push && gh run list --limit 1
 	-cd eddi && git push && gh run list --limit 1
@@ -216,10 +213,13 @@ priority:
 	@echo "See CLAUDE.md for complete framework details."
 
 # Quick status and priorities
-quick:
+quick: check-submodule-health
 	@echo "⚡ Quick Ecosystem Status & Priorities:"
 	@echo ""
 	@make --no-print-directory status
+	@echo ""
+	@echo "🔍 Submodule Health:"
+	@git submodule status | grep -E "^[\+\-]" && echo "⚠️  Submodules need attention" || echo "✅ All submodules clean"
 	@echo ""
 	@echo "🎯 Highest Priority Items (Phase 1):"
 	@echo "  skeleton-mhi#1: Analyze legacy MHI implementation (11 pts - Research critical)"
@@ -230,6 +230,12 @@ quick:
 	@echo "  1. Run 'make roadmap' for strategic context"
 	@echo "  2. Run 'make issues' to see all available work"
 	@echo "  3. Follow TDD methodology in CLAUDE.md"
+
+# Submodule Health Check - prevents detached HEAD issues
+check-submodule-health:
+	@echo "🔍 Checking submodule health..."
+	@git submodule foreach 'branch=$$(git rev-parse --abbrev-ref HEAD); if [ "$$branch" = "HEAD" ]; then echo "❌ DETACHED HEAD in $$name - run: cd $$name && git checkout main"; exit 1; fi; echo "✅ $$name on branch: $$branch"'
+	@echo "✅ All submodules are on proper branches!"
 
 # Enhanced Workflow Monitoring Commands
 
