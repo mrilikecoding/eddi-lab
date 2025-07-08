@@ -627,7 +627,7 @@ When switching between projects (general):
 ```bash
 # From eddi-lab root - run specific project tests
 make test-llm-orc        # LLM Orchestra tests (uv)
-make test-streampose     # StreamPoseML tests (pip/venv)
+make test-streampose     # StreamPoseML tests (uv)
 make test-eddi          # Eddi tests (uv)
 make test-eddi-pad      # Eddi-pad tests (cargo)
 make test-skeleton-mhi  # Skeleton-MHI tests (cargo)
@@ -637,13 +637,12 @@ make test-integration   # Cross-repo integration tests
 cd llm-orc && make test     # Uses: uv run pytest
 cd eddi && make test        # Uses: uv run pytest  
 cd eddi-pad && cargo test   # Uses: cargo test
-cd StreamPoseML && source .venv/bin/activate && python -m pytest
+cd StreamPoseML && uv run pytest
 ```
 
 **Development Environment Context:**
-- **uv Projects** (llm-orc, eddi): Fast dependency management, isolated .venv
+- **uv Projects** (llm-orc, eddi, StreamPoseML): Fast dependency management, isolated .venv
 - **Cargo Projects** (eddi-pad, skeleton-mhi): Rust toolchain
-- **Legacy Python** (StreamPoseML): Traditional pip/venv workflow
 
 **Always verify correct context:**
 - Use `pwd` to confirm current directory
