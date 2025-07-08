@@ -795,47 +795,25 @@ When multiple HIGH priority items exist:
 - Performance optimizations
 - Documentation updates
 
-# BRANCH NAMING CONVENTIONS
+### Branch Naming Conventions
 
-## Single-Repo Issues
-```
-issue-{number}-{short-description}
-```
-Examples:
+**Single-Repo Issues:** `issue-{number}-{short-description}`
 - `issue-42-fix-device-latency`
 - `issue-15-add-gesture-validation`
-- `issue-73-refactor-mhi-algorithm`
 
-## Multi-Repo Features
-```
-feature/{epic-name}-{component}
-```
-Examples:
+**Multi-Repo Features:** `feature/{epic-name}-{component}`
 - `feature/gesture-pipeline-pose-extraction` (StreamPoseML)
-- `feature/gesture-pipeline-mhi-processing` (Skeleton-MHI)  
 - `feature/gesture-pipeline-spatial-response` (Eddi)
-- `feature/gesture-pipeline-device-control` (Eddi-pad)
 
-## Research/Experimental Work
-```
-research/{experiment-name}
-```
-Examples:
+**Research Work:** `research/{experiment-name}`
 - `research/skeleton-mhi-baseline`
-- `research/performance-benchmarks`
 
-# ISSUE-DRIVEN DEVELOPMENT
-
-## Always Work From Issues
-1. **NEVER start implementation without a GitHub issue**
-2. **Create issue first** if one doesn't exist
-3. **Reference issue number** in all commits and PRs
-4. **Close issues via commit messages** when appropriate
-
-## Issue Creation Guidelines
-- **Single-repo issues**: Create in the specific repository
-- **Cross-repo features**: Create epic in eddi-lab (main repo)
-- **Research tasks**: Create in eddi-lab with "research" label
+### Issue-Driven Development
+- **Always work from GitHub issues** - create if none exists
+- **Reference issue numbers** in commits and PRs
+- **Close via commit messages** when appropriate
+- **Single-repo issues**: Create in specific repository
+- **Cross-repo features**: Create epic in eddi-lab
 
 # INTEGRATION TESTING STRATEGY
 
@@ -852,23 +830,52 @@ For any cross-repo feature:
 3. **Integration test must pass** before any cross-repo PR merge
 4. **Performance assertions** included in integration tests
 
-## GITHUB WORKFLOW
+## FEATURE BRANCH TO MAIN WORKFLOW
 
-When working on GitHub issues, follow these steps:
+### Branch Creation and Development
+```bash
+# 1. Create branch (use naming conventions below)
+git checkout -b issue-{number}-{description}  # or feature/{epic-name}-{component}
+gh issue view {number}  # Review issue details
 
-1. **Check out proper branch**: `git checkout -b issue-{number}-{description}`
-2. Use `gh issue view {number}` to get the issue details
-3. Understand the problem described in the issue
-4. **Create/update integration tests** in eddi-lab if cross-repo feature
-5. Search the codebase for relevant files
-6. Follow TDD cycle: Red → Green → Refactor
-7. Implement the necessary changes to fix the issue
-8. Write and run tests to verify the fix
-9. **Run integration tests** in eddi-lab for cross-repo changes
-10. Ensure code passes linting and type checking
-11. Create descriptive commit messages referencing issue
-12. Push and create PR with `gh pr create`
-13. **Link PR to issue** in PR description
+# 2. Development cycle (repeat until complete)
+# Make changes following TDD: Red → Green → Refactor
+make lint && make test  # ALWAYS run before commits
+git add . && git commit -m "feat: implement component (closes #{number})"
+```
+
+### Pre-Push Validation
+```bash
+# 3. Pre-push validation (CRITICAL)
+make lint      # Must pass - fix immediately if fails
+make test      # Must pass - no exceptions
+
+# 4. Push and monitor CI
+git push origin feature-branch
+gh run list    # Check CI triggered
+gh run watch   # Monitor until complete (handle gracefully)
+```
+
+### PR Creation and Merge
+```bash
+# 5. Create PR only after CI passes
+gh pr create --title "[Issue #{number}] Brief description" --body "Closes #{number}"
+
+# 6. Monitor PR CI and merge
+gh pr view --json statusCheckRollup  # Verify CI status
+gh pr merge --squash  # After approval
+gh run watch  # Monitor merge CI
+
+# 7. Update main repo (if submodule work)
+cd .. && git add submodule-name && git commit -m "Update submodule reference"
+make push  # Use make push for graceful monitoring
+```
+
+### Critical Rules
+- **NEVER push without `make lint && make test` passing**
+- **NEVER create PR with failing local validation**
+- **ALWAYS monitor CI after push operations**
+- **Fix linting/CI failures immediately**
 
 # PULL REQUEST GUIDELINES
 
@@ -958,6 +965,48 @@ gh run watch           # Monitor triggered workflows
 ```
 
 Use these commands instead of manually navigating repositories and running individual git/cargo/pytest commands.
+
+## STANDARDIZED MAKE TARGETS
+
+### Implemented Across All Projects
+All projects now have consistent make targets that support the feature branch workflow:
+
+```makefile
+# Essential for feature branch workflow
+lint          # Check code quality (must pass before push)
+test          # Run all tests (must pass before push)  
+format        # Auto-fix formatting issues
+lint-check    # Check without modifying (compatibility)
+test-watch    # Run tests in watch mode
+
+# Git operations with CI monitoring
+push          # Push with workflow monitoring
+workflow-status    # Check CI workflow status
+watch-workflows    # Watch active workflows
+status        # Show git status
+
+# Development environment
+setup         # Setup development environment
+clean         # Clean build artifacts
+help          # Show all available targets
+```
+
+### Project-Specific Implementations
+
+**Rust Projects (eddi-pad, skeleton-mhi):**
+- `lint` = `cargo clippy -- -D warnings && cargo fmt --check`
+- `format` = `cargo fmt`
+- `test` = `cargo test`
+
+**Python Projects (eddi, llm-orc, StreamPoseML):**
+- `lint` = `mypy + ruff check` (type checking first, then linting)
+- `format` = `ruff check --fix + ruff format`
+- `test` = `uv run pytest`
+
+**Main Repository (eddi-lab):**
+- Orchestrates all submodule operations
+- Comprehensive ecosystem monitoring
+- Cross-repository testing and status
 
 ## DEVELOPMENT PRIORITIES
 
