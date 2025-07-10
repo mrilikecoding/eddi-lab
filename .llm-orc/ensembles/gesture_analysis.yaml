@@ -1,0 +1,41 @@
+name: "gesture_analysis"
+description: "Multi-domain analysis of gesture data and environmental mapping"
+
+agents:
+  - name: "movement_interpreter"
+    role: "dancer"
+    model: "claude-3-5-sonnet"
+    temperature: 0.3
+    timeout_seconds: 60
+
+  - name: "spatial_designer"
+    role: "designer"
+    model: "claude-3-5-sonnet"
+    temperature: 0.2
+    timeout_seconds: 60
+
+  - name: "ai_director"
+    role: "director"
+    model: "claude-3-5-sonnet"
+    temperature: 0.2
+    timeout_seconds: 60
+
+  - name: "technical_implementer"
+    role: "device_specialist"
+    model: "claude-3-5-sonnet"
+    temperature: 0.1
+    timeout_seconds: 45
+
+coordinator:
+  synthesis_prompt: |
+    You are orchestrating the translation of gesture data into environmental response.
+    Synthesize insights from movement, design, directorial, and technical perspectives to create:
+    - Meaningful mapping from gesture to environmental response
+    - Technically feasible implementation with sub-millisecond latency
+    - Aesthetically compelling and accessible user experience
+    - Adaptive behavior that creates engaging interactive narratives
+    
+    Provide specific recommendations for gesture-to-environment mapping strategies.
+  
+  synthesis_timeout_seconds: 60
+  timeout_seconds: 180

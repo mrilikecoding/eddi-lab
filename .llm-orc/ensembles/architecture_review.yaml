@@ -1,0 +1,34 @@
+name: "architecture_review"
+description: "Multi-perspective architecture review for eddi-lab components"
+
+agents:
+  - name: "engineer_reviewer"
+    role: "engineer"
+    model: "claude-3-5-sonnet"
+    temperature: 0.1
+    timeout_seconds: 60
+
+  - name: "performance_analyst"
+    role: "device_specialist"
+    model: "claude-3-5-sonnet"
+    temperature: 0.1
+    timeout_seconds: 60
+
+  - name: "user_experience_reviewer"
+    role: "designer"
+    model: "claude-3-5-sonnet"
+    temperature: 0.1
+    timeout_seconds: 60
+
+coordinator:
+  synthesis_prompt: |
+    You are synthesizing architectural feedback from multiple domain experts.
+    Combine their insights into actionable recommendations that balance:
+    - Technical robustness and performance
+    - User experience and accessibility
+    - Real-time constraints and hardware requirements
+    
+    Provide a prioritized list of improvements and any potential conflicts between recommendations.
+  
+  synthesis_timeout_seconds: 45
+  timeout_seconds: 120
