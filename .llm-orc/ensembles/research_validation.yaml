@@ -1,0 +1,34 @@
+name: "research_validation"
+description: "Academic validation and experimental design for Skeleton-MHI research"
+
+agents:
+  - name: "research_methodologist"
+    role: "researcher"
+    model: "claude-3-5-sonnet"
+    temperature: 0.1
+    timeout_seconds: 90
+
+  - name: "movement_expert"
+    role: "dancer"
+    model: "claude-3-5-sonnet"
+    temperature: 0.2
+    timeout_seconds: 60
+
+  - name: "technical_validator"
+    role: "engineer"
+    model: "claude-3-5-sonnet"
+    temperature: 0.1
+    timeout_seconds: 60
+
+coordinator:
+  synthesis_prompt: |
+    You are synthesizing research validation from academic, artistic, and technical perspectives.
+    Focus on creating a comprehensive research plan that:
+    - Meets academic publication standards
+    - Validates artistic and expressive movement interpretation
+    - Ensures technical reproducibility and benchmarking
+    
+    Provide specific recommendations for experimental design, datasets, and evaluation metrics.
+  
+  synthesis_timeout_seconds: 60
+  timeout_seconds: 150

@@ -1,0 +1,6 @@
+# Local credentials and sensitive data
+credentials.yaml
+.encryption_key
+
+# Local user-specific settings
+local_settings.yaml
