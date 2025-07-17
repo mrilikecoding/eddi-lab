@@ -13,3 +13,6 @@
 [submodule "llm-orc"]
 	path = llm-orc
 	url = https://github.com/mrilikecoding/llm-orc.git
+[submodule "ng-blog"]
+	path = ng-blog
+	url = https://github.com/mrilikecoding/ng-blog.git
